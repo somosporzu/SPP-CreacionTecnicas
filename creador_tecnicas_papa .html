@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Creador de Técnicas PAPA</title>
+  <style>
+    :root{
+      --bg:#f4efe2;
+      --paper:#fffaf0;
+      --paper2:#f8f1df;
+      --ink:#1f2528;
+      --muted:#657079;
+      --line:#d6c9ad;
+      --blue:#1f5f7a;
+      --blue-dark:#154356;
+      --blue-soft:#dbeaf1;
+      --gold:#b88932;
+      --red:#b94b4b;
+      --green:#527a45;
+      --shadow:0 18px 45px rgba(30,35,40,.16);
+      --radius:18px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:
+        radial-gradient(circle at top left, rgba(31,95,122,.15), transparent 30rem),
+        linear-gradient(180deg, #efe5cf 0%, var(--bg) 42%, #eadfc8 100%);
+      color:var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height:100vh;
+    }
+
+    header{
+      padding:28px 24px 18px;
+      max-width:1450px;
+      margin:0 auto;
+    }
+    .title-card{
+      background:linear-gradient(135deg, var(--blue-dark), var(--blue));
+      color:white;
+      border-radius:28px;
+      padding:24px 28px;
+      box-shadow:var(--shadow);
+      display:flex;
+      justify-content:space-between;
+      gap:20px;
+      align-items:center;
+    }
+    h1{margin:0;font-size:clamp(1.7rem,3vw,3rem);letter-spacing:.02em}
+    .subtitle{margin:.35rem 0 0;color:#dcecf2;max-width:850px;line-height:1.45}
+    .badge{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);padding:10px 14px;border-radius:999px;white-space:nowrap;font-weight:700}
+
+    main{
+      max-width:1450px;
+      margin:0 auto;
+      padding:0 24px 36px;
+      display:grid;
+      grid-template-columns:minmax(0,1fr) 390px;
+      gap:22px;
+      align-items:start;
+    }
+
+    .panel{
+      background:rgba(255,250,240,.94);
+      border:1px solid rgba(97,81,44,.18);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .panel-head{
+      background:linear-gradient(90deg, rgba(31,95,122,.14), rgba(184,137,50,.12));
+      border-bottom:1px solid var(--line);
+      padding:15px 18px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+    }
+    .panel-head h2{margin:0;font-size:1.08rem;text-transform:uppercase;letter-spacing:.07em;color:var(--blue-dark)}
+    .panel-body{padding:18px}
+
+    .grid{display:grid;gap:14px}
+    .grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .grid.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+
+    label{display:block;font-size:.82rem;font-weight:800;color:#34454d;margin-bottom:6px;text-transform:uppercase;letter-spacing:.045em}
+    input, select, textarea{
+      width:100%;
+      border:1px solid #cbbd9f;
+      border-radius:12px;
+      padding:10px 12px;
+      background:#fffdf7;
+      color:var(--ink);
+      font:inherit;
+      outline:none;
+    }
+    textarea{min-height:96px;resize:vertical;line-height:1.45}
+    input:focus, select:focus, textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(31,95,122,.14)}
+    .help{font-size:.84rem;color:var(--muted);line-height:1.35;margin-top:6px}
+
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;padding:12px;background:#f0e4ca;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+    .tab{
+      border:1px solid #cdbd9c;
+      background:#fff8e8;
+      color:#314147;
+      border-radius:999px;
+      padding:9px 13px;
+      font-weight:800;
+      cursor:pointer;
+      transition:.15s ease;
+    }
+    .tab.active{background:var(--blue);color:white;border-color:var(--blue)}
+    .tab:hover{transform:translateY(-1px)}
+    .tab-content{display:none}
+    .tab-content.active{display:block}
+
+    .force-wrap{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+    .force-card{
+      border:1px solid #cdbd9c;
+      border-radius:14px;
+      padding:11px;
+      background:#fff9ea;
+      cursor:pointer;
+      min-height:88px;
+      position:relative;
+    }
+    .force-card input{position:absolute;opacity:0;pointer-events:none}
+    .force-card strong{display:block;color:var(--blue-dark);margin-bottom:4px}
+    .force-card span{font-size:.82rem;color:var(--muted);line-height:1.25}
+    .force-card.selected{border-color:var(--blue);background:var(--blue-soft);box-shadow:0 0 0 3px rgba(31,95,122,.12)}
+
+    .catalog-tools{display:grid;grid-template-columns:1fr 180px 140px;gap:10px;margin-bottom:14px}
+    .effect-list{display:grid;gap:10px;max-height:620px;overflow:auto;padding-right:4px}
+    .effect-card{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:12px;
+      align-items:center;
+      border:1px solid #d6c7a8;
+      background:#fffdf7;
+      border-radius:14px;
+      padding:12px;
+    }
+    .effect-title{font-weight:900;color:#22333a;margin-bottom:4px}
+    .effect-meta{font-size:.82rem;color:var(--muted);line-height:1.35}
+    .chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+    .chip{font-size:.72rem;border-radius:999px;padding:3px 7px;background:#eee2c9;color:#4c4534;font-weight:800}
+    .chip.force{background:#d8eaf2;color:#164354}
+    .chip.warn{background:#f2d9d9;color:#8b2424}
+    .chip.major{background:#ead9f2;color:#5d2a72}
+    .cost-pill{font-weight:900;color:white;background:var(--blue);padding:7px 10px;border-radius:999px;white-space:nowrap}
+    .add-btn,.small-btn,.main-btn{
+      border:0;border-radius:12px;cursor:pointer;font-weight:900;letter-spacing:.02em;
+      transition:.15s ease;font-family:inherit;
+    }
+    .add-btn{background:var(--gold);color:white;padding:9px 12px}
+    .add-btn:hover,.small-btn:hover,.main-btn:hover{filter:brightness(.96);transform:translateY(-1px)}
+
+    .selected-list{display:grid;gap:10px}
+    .selected-item{border:1px solid #d7c8a8;border-radius:14px;background:#fffdf8;padding:12px;display:grid;gap:9px}
+    .selected-top{display:flex;align-items:start;justify-content:space-between;gap:10px}
+    .selected-top strong{color:var(--blue-dark)}
+    .inline-controls{display:grid;grid-template-columns:90px 1fr;gap:10px;align-items:start}
+    .remove{background:#f8e1dd;color:#9b2c25;border:1px solid #e5b4ac;border-radius:10px;padding:7px 9px;font-weight:900;cursor:pointer}
+    .note-input{min-height:54px}
+
+    .sidebar{position:sticky;top:18px;display:grid;gap:16px}
+    .meter{
+      display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;margin-bottom:10px;
+    }
+    .meter strong{font-size:.88rem;color:#304147}
+    .meter span{font-weight:900}
+    .bar{height:13px;background:#eadfc7;border-radius:999px;overflow:hidden;border:1px solid #d7c5a3;margin-bottom:12px}
+    .bar > div{height:100%;background:linear-gradient(90deg,var(--green),var(--gold));width:0%;transition:.2s ease}
+    .status{border-radius:14px;padding:12px;font-weight:850;line-height:1.35;margin-top:10px}
+    .status.ok{background:#e5f0df;color:#315c2d;border:1px solid #b8d4af}
+    .status.warn{background:#fff0d5;color:#7a5318;border:1px solid #e2c184}
+    .status.bad{background:#f7dddd;color:#842b2b;border:1px solid #e2aaaa}
+
+    .summary-box{background:#fffdf7;border:1px solid var(--line);border-radius:14px;padding:12px;line-height:1.55;font-size:.94rem;white-space:pre-wrap;max-height:420px;overflow:auto}
+    .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .main-btn{background:var(--blue);color:white;padding:12px}
+    .main-btn.gold{background:var(--gold)}
+    .main-btn.green{background:var(--green)}
+    .main-btn.red{background:var(--red)}
+    .small-btn{background:#e9dfc8;color:#2e3a3f;padding:9px 10px}
+
+    .rules{display:grid;gap:10px;font-size:.92rem;color:#445056;line-height:1.45}
+    .rule-card{background:#fffdf7;border:1px solid #d9c9a9;border-left:5px solid var(--blue);border-radius:12px;padding:12px}
+    .rule-card strong{color:var(--blue-dark)}
+
+    .level-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+    .level-card{border:1px solid #d3c1a0;border-radius:14px;background:#fff9ea;padding:11px;cursor:pointer}
+    .level-card.selected{border-color:var(--blue);background:var(--blue-soft);box-shadow:0 0 0 3px rgba(31,95,122,.12)}
+    .level-card strong{display:block;color:var(--blue-dark);font-size:1rem}
+    .level-card span{display:block;color:var(--muted);font-size:.82rem;margin-top:3px}
+
+    footer{max-width:1450px;margin:0 auto 28px;padding:0 24px;color:#6a6253;font-size:.85rem}
+
+    @media (max-width:1100px){
+      main{grid-template-columns:1fr}
+      .sidebar{position:static}
+      .force-wrap{grid-template-columns:repeat(2,1fr)}
+      .catalog-tools{grid-template-columns:1fr}
+    }
+    @media (max-width:760px){
+      .title-card{display:block}
+      .badge{display:inline-block;margin-top:14px}
+      .grid.two,.grid.three,.grid.four,.level-cards{grid-template-columns:1fr}
+      .force-wrap{grid-template-columns:1fr}
+      .actions{grid-template-columns:1fr}
+      header, main, footer{padding-left:14px;padding-right:14px}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="title-card">
+      <div>
+        <h1>Creador de Técnicas PAPA</h1>
+        <p class="subtitle">Herramienta de diseño para construir técnicas con nivel, Fuerzas, PC, efectos, desventajas, límites de balance y exportación final en texto.</p>
+      </div>
+      <div class="badge">Sistema P.A.P.A.</div>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel">
+      <nav class="tabs" aria-label="Secciones">
+        <button class="tab active" data-tab="base">1. Base</button>
+        <button class="tab" data-tab="effects">2. Efectos</button>
+        <button class="tab" data-tab="drawbacks">3. Desventajas</button>
+        <button class="tab" data-tab="final">4. Texto final</button>
+        <button class="tab" data-tab="rules">Referencia</button>
+      </nav>
+
+      <div class="panel-body">
+        <div id="base" class="tab-content active">
+          <div class="grid two">
+            <div>
+              <label for="techName">Nombre de la técnica</label>
+              <input id="techName" placeholder="Ej: Picada Incandescente" />
+            </div>
+            <div>
+              <label for="treeName">Árbol</label>
+              <input id="treeName" placeholder="Ej: Llamas del Cóndor" />
+            </div>
+          </div>
+
+          <div style="height:16px"></div>
+          <label>Nivel de poder</label>
+          <div class="level-cards" id="levelCards"></div>
+
+          <div style="height:16px"></div>
+          <label>Fuerzas de la técnica</label>
+          <div class="force-wrap" id="forceWrap"></div>
+          <p class="help">Elige una Fuerza principal y, si hace falta, una secundaria. La primera seleccionada se considera principal.</p>
+
+          <div style="height:16px"></div>
+          <div class="grid three">
+            <div>
+              <label for="actionType">Acción requerida</label>
+              <select id="actionType">
+                <option>Acción Principal</option>
+                <option>Acción Rápida</option>
+                <option>Reacción</option>
+                <option>Pasiva</option>
+                <option>Otro</option>
+              </select>
+            </div>
+            <div>
+              <label for="rangePreset">Distancia</label>
+              <select id="rangePreset">
+                <option>Toque</option>
+                <option>Personal</option>
+                <option>Adyacente</option>
+                <option>3 metros</option>
+                <option>5 metros</option>
+                <option>6 metros</option>
+                <option>10 metros</option>
+                <option>15 metros</option>
+                <option>20 metros</option>
+                <option>30 metros</option>
+                <option>Personalizado</option>
+              </select>
+              <input id="range" placeholder="Distancia personalizada" value="Toque" style="margin-top:8px" />
+            </div>
+            <div>
+              <label for="targetPreset">Objetivos y áreas</label>
+              <select id="targetPreset">
+                <option>1 objetivo</option>
+                <option>1 criatura</option>
+                <option>1 aliado</option>
+                <option>Tú</option>
+                <option>Tú o un aliado adyacente</option>
+                <option>Hasta 2 objetivos</option>
+                <option>Hasta 3 objetivos</option>
+                <option>Radio de 1 metro</option>
+                <option>Radio de 3 metros</option>
+                <option>Radio de 5 metros</option>
+                <option>Radio de 10 metros</option>
+                <option>Cono de 3 metros</option>
+                <option>Cono de 6 metros</option>
+                <option>Línea de 6 metros</option>
+                <option>Línea de 10 metros</option>
+                <option>Personalizado</option>
+              </select>
+              <input id="target" placeholder="Objetivo o área personalizada" value="1 objetivo" style="margin-top:8px" />
+            </div>
+          </div>
+          <p class="help">Si no eliges otra opción, la técnica queda por defecto con distancia <strong>Toque</strong> y <strong>1 objetivo</strong>. Puedes usar “Personalizado” para escribir otra distancia, objetivo o área.</p>
+
+          <div style="height:16px"></div>
+          <div class="grid two">
+            <div>
+              <label for="whenText">Cuándo se usa</label>
+              <textarea id="whenText" placeholder="Ej: En tu turno, cuando realizas un ataque cuerpo a cuerpo."></textarea>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:6px">
+                <label for="effectText" style="margin:0">Qué hace</label>
+                <label style="margin:0;text-transform:none;letter-spacing:0;font-size:.78rem;color:#52616a"><input id="autoEffectText" type="checkbox" checked style="width:auto;margin-right:6px">Auto desde efectos</label>
+              </div>
+              <textarea id="effectText" placeholder="Los efectos seleccionados aparecerán aquí automáticamente."></textarea>
+            </div>
+          </div>
+
+          <div style="height:16px"></div>
+          <div class="grid two">
+            <div>
+              <label for="saveText">Salvación, si aplica</label>
+              <input id="saveText" placeholder="Ej: Salvación de Cuerpo ND 12" />
+            </div>
+            <div>
+              <label for="durationText">Duración y cierre</label>
+              <input id="durationText" placeholder="Ej: 3 rondas; termina si quedas Inconsciente" />
+            </div>
+          </div>
+
+          <div style="height:16px"></div>
+          <label for="descriptionText">Descripción narrativa</label>
+          <textarea id="descriptionText" placeholder="Describe cómo se ve, suena o se siente la técnica en la ficción."></textarea>
+        </div>
+
+        <div id="effects" class="tab-content">
+          <div class="catalog-tools">
+            <input id="effectSearch" placeholder="Buscar efecto: daño, vuelo, curación..." />
+            <select id="effectCategory">
+              <option value="all">Todas las categorías</option>
+            </select>
+            <select id="effectForce">
+              <option value="all">Todas las Fuerzas</option>
+            </select>
+          </div>
+          <div class="effect-list" id="effectList"></div>
+        </div>
+
+        <div id="drawbacks" class="tab-content">
+          <div class="catalog-tools">
+            <input id="drawbackSearch" placeholder="Buscar desventaja: Fatiga, carga, daño propio..." />
+            <select id="drawbackCategory">
+              <option value="all">Todas las categorías</option>
+            </select>
+            <button class="small-btn" id="clearDrawbacks">Limpiar</button>
+          </div>
+          <div class="effect-list" id="drawbackList"></div>
+        </div>
+
+        <div id="final" class="tab-content">
+          <div class="grid two">
+            <div class="panel" style="box-shadow:none">
+              <div class="panel-head"><h2>Efectos seleccionados</h2></div>
+              <div class="panel-body"><div class="selected-list" id="selectedEffects"></div></div>
+            </div>
+            <div class="panel" style="box-shadow:none">
+              <div class="panel-head"><h2>Desventajas seleccionadas</h2></div>
+              <div class="panel-body"><div class="selected-list" id="selectedDrawbacks"></div></div>
+            </div>
+          </div>
+          <div style="height:16px"></div>
+          <label for="extraNotes">Notas del diseñador</label>
+          <textarea id="extraNotes" placeholder="Notas de balance, justificación por Fuerza, restricciones especiales, etc."></textarea>
+        </div>
+
+        <div id="rules" class="tab-content">
+          <div class="rules">
+            <div class="rule-card"><strong>Estructura de niveles:</strong> Nivel 0 cuesta 1 Resistencia y usa 5 PC; Nivel 1 cuesta 2 Resistencia y usa 10 PC; Nivel 2 cuesta 4 Resistencia y usa 15 PC; Nivel 3 cuesta 6 Resistencia y usa 25 PC.</div>
+            <div class="rule-card"><strong>Límites por nivel:</strong> Nivel 0 no debe tener estados fuertes, ataques adicionales ni multiplicadores. Nivel 1 permite efectos moderados. Nivel 2 permite combinaciones fuertes. Nivel 3 permite efectos cumbre.</div>
+            <div class="rule-card"><strong>Desventajas:</strong> reducen PC, pero solo si limitan realmente la técnica. Máximo recuperable: N0 = 2 PC, N1 = 4 PC, N2 = 6 PC, N3 = 8 PC.</div>
+            <div class="rule-card"><strong>Efectos mayores:</strong> ataques adicionales, multiplicadores, estados mayores, área grande, curación masiva, invocación persistente, vuelo prolongado, control mental o inmunidad no deben combinarse libremente antes de Nivel 3.</div>
+            <div class="rule-card"><strong>Daño base:</strong> usa el arma, arma natural o forma de ataque usada. Si no hay arma ni ataque natural, usa Puño Desnudo.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="sidebar">
+      <section class="panel">
+        <div class="panel-head"><h2>Resumen mecánico</h2></div>
+        <div class="panel-body">
+          <div class="meter"><strong>Nivel</strong><span id="sumLevel">0</span></div>
+          <div class="meter"><strong>Coste Resistencia</strong><span id="sumRes">1</span></div>
+          <div class="meter"><strong>PC disponibles</strong><span id="sumBudget">5</span></div>
+          <div class="meter"><strong>PC en efectos</strong><span id="sumEffects">0</span></div>
+          <div class="meter"><strong>PC recuperados</strong><span id="sumDrawbacks">0</span></div>
+          <div class="meter"><strong>Coste final</strong><span id="sumFinal">0</span></div>
+          <div class="bar"><div id="pcBar"></div></div>
+          <div id="statusBox" class="status ok">La técnica está dentro del presupuesto.</div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>Vista previa</h2></div>
+        <div class="panel-body">
+          <div class="summary-box" id="previewText"></div>
+          <div style="height:12px"></div>
+          <div class="actions">
+            <button class="main-btn" id="copyBtn">Copiar texto</button>
+            <button class="main-btn gold" id="downloadBtn">Exportar .txt</button>
+            <button class="main-btn green" id="saveBtn">Guardar</button>
+            <button class="main-btn red" id="resetBtn">Limpiar</button>
+          </div>
+          <p class="help" id="copyMsg"></p>
+        </div>
+      </section>
+    </aside>
+  </main>
+
+  <footer>
+    Creador local en HTML. Los datos se guardan en el navegador mediante almacenamiento local.
+  </footer>
+
+  <script>
+    const levels = {
+      0:{res:1, pc:5, maxDraw:2, name:'Nivel 0', note:'Truco útil, apoyo menor, daño leve o movimiento corto.'},
+      1:{res:2, pc:10, maxDraw:4, name:'Nivel 1', note:'Técnica estándar de combate, defensa, movilidad o apoyo.'},
+      2:{res:4, pc:15, maxDraw:6, name:'Nivel 2', note:'Técnica fuerte o combinación relevante de efectos.'},
+      3:{res:6, pc:25, maxDraw:8, name:'Nivel 3', note:'Técnica decisiva, efecto cumbre o poder característico.'}
+    };
+
+    const forces = [
+      {name:'Destrucción', text:'Daño directo, ataques, penalizadores defensivos y ruptura.'},
+      {name:'Conservación', text:'Curación, defensa, protección, resistencias y restauración.'},
+      {name:'Transformación', text:'Movimiento, elementos, terreno y alteración física temporal.'},
+      {name:'Creación', text:'Invocaciones, ilusiones, objetos, armas y manifestaciones.'},
+      {name:'Orden', text:'Control, sellos, límites, precisión, estabilización y contratos.'},
+      {name:'Caos', text:'Azar, venenos, daño persistente, confusión y mutación.'}
+    ];
+
+    const effects = [
+      {id:'atk1', name:'+1 a la tirada de ataque', cost:2, cat:'Ofensivo', forces:['Destrucción','Orden'], text:'Bono menor a una tirada de ataque.'},
+      {id:'atk2', name:'+2 a la tirada de ataque', cost:3, cat:'Ofensivo', forces:['Destrucción','Orden'], text:'Bono moderado a una tirada de ataque.'},
+      {id:'atk3', name:'+3 a la tirada de ataque', cost:5, cat:'Ofensivo', forces:['Destrucción'], text:'Bono fuerte a una tirada de ataque.', major:false},
+      {id:'dmg1', name:'+1 al daño', cost:2, cat:'Ofensivo', forces:['Destrucción','Transformación','Caos'], text:'Aumenta levemente el daño de un ataque.'},
+      {id:'dmg2', name:'+2 al daño', cost:4, cat:'Ofensivo', forces:['Destrucción','Transformación','Caos'], text:'Aumenta moderadamente el daño de un ataque.'},
+      {id:'dmg3', name:'+3 al daño', cost:8, cat:'Ofensivo', forces:['Destrucción'], text:'Aumento fuerte de daño en un ataque.'},
+      {id:'mult2', name:'Multiplicador x2', cost:12, cat:'Ofensivo', forces:['Destrucción'], text:'Duplica el daño final de la técnica. Nivel mínimo 2. No combinar con ataque extra, área, daño continuo o estado.', major:true, minLevel:2},
+      {id:'mult3', name:'Multiplicador x3', cost:20, cat:'Ofensivo', forces:['Destrucción'], text:'Triplica el daño final. Solo Nivel 3.', major:true, minLevel:3},
+      {id:'proj1', name:'Proyectil 1d6-2', cost:3, cat:'Ofensivo', forces:['Transformación','Creación','Caos'], text:'Proyectil de energía básico a distancia.'},
+      {id:'proj2', name:'Proyectil 1d6', cost:7, cat:'Ofensivo', forces:['Transformación','Creación','Caos'], text:'Proyectil de energía estándar.'},
+      {id:'range10', name:'Ataque a distancia 10 m', cost:4, cat:'Ofensivo', forces:['Destrucción','Transformación','Creación'], text:'Permite proyectar una técnica ofensiva hasta 10 metros.'},
+      {id:'area1', name:'Área 1 m', cost:2, cat:'Área', forces:['Destrucción','Transformación','Caos','Conservación','Orden'], text:'Afecta un área pequeña.'},
+      {id:'area5', name:'Área 5 m', cost:3, cat:'Área', forces:['Destrucción','Transformación','Caos','Conservación','Orden'], text:'Afecta un área moderada.', major:false},
+      {id:'area10', name:'Área 10 m', cost:5, cat:'Área', forces:['Destrucción','Transformación','Caos','Conservación','Orden'], text:'Afecta un área grande. Requiere especial cuidado.', major:true},
+      {id:'extraWeak', name:'+1 ataque adicional sin Atributo al daño', cost:5, cat:'Ofensivo', forces:['Destrucción','Caos'], text:'Ataque adicional limitado. Nivel mínimo 1.', major:true, minLevel:1},
+      {id:'extraNormal', name:'+1 ataque adicional normal', cost:8, cat:'Ofensivo', forces:['Destrucción'], text:'Ataque adicional completo. Nivel mínimo 2.', major:true, minLevel:2},
+      {id:'dot1', name:'Daño continuo 1 por ronda', cost:3, cat:'Ofensivo', forces:['Caos','Transformación'], text:'Daño persistente leve.'},
+      {id:'dot1d6', name:'Daño continuo 1d6 por ronda', cost:6, cat:'Ofensivo', forces:['Caos','Transformación'], text:'Daño persistente medio; requiere Salvación o límite claro.', major:true},
+      {id:'def1', name:'+1 Defensa', cost:1, cat:'Defensivo', forces:['Conservación','Orden','Transformación','Creación'], text:'Bono defensivo leve.'},
+      {id:'def2', name:'+2 Defensa', cost:3, cat:'Defensivo', forces:['Conservación','Orden','Transformación','Creación'], text:'Bono defensivo moderado.'},
+      {id:'def3', name:'+3 Defensa', cost:5, cat:'Defensivo', forces:['Conservación','Orden'], text:'Bono defensivo fuerte.'},
+      {id:'fixed14', name:'Defensa fija 14', cost:10, cat:'Defensivo', forces:['Conservación','Orden'], text:'La Defensa se vuelve 14 si era menor.', major:true},
+      {id:'fixed16', name:'Defensa fija 16', cost:15, cat:'Defensivo', forces:['Conservación','Orden'], text:'La Defensa se vuelve 16 si era menor. Efecto mayor.', major:true, minLevel:3},
+      {id:'resist', name:'Resistencia a un tipo de daño', cost:5, cat:'Defensivo', forces:['Conservación','Transformación','Orden'], text:'Recibe mitad de daño de un tipo específico.'},
+      {id:'immune', name:'Inmunidad a un tipo de daño', cost:12, cat:'Defensivo', forces:['Conservación'], text:'Anula un tipo específico de daño por duración limitada.', major:true, minLevel:3},
+      {id:'move3', name:'+3 m de movimiento', cost:1, cat:'Movimiento', forces:['Transformación','Caos','Orden'], text:'Aumento menor de movimiento.'},
+      {id:'move6', name:'+6 m de movimiento', cost:3, cat:'Movimiento', forces:['Transformación','Caos','Orden'], text:'Aumento moderado de movimiento.'},
+      {id:'tele5', name:'Movimiento instantáneo 5 m', cost:3, cat:'Movimiento', forces:['Transformación','Orden','Caos'], text:'Movimiento corto inmediato.'},
+      {id:'flightLevitate', name:'Levitar', cost:3, cat:'Movimiento', forces:['Transformación','Orden','Creación'], text:'Vuelo a mitad de velocidad o suspensión breve.'},
+      {id:'flight', name:'Vuelo', cost:5, cat:'Movimiento', forces:['Transformación','Orden','Creación'], text:'Velocidad de vuelo normal por duración limitada. Efecto mayor si es prolongado.', major:true},
+      {id:'incorp', name:'Movimiento incorpóreo', cost:5, cat:'Movimiento', forces:['Caos','Transformación','Creación'], text:'Ignora terreno y criaturas durante el movimiento. Efecto mayor si dura varias rondas.', major:true},
+      {id:'heal3', name:'Curar 3 Resistencia', cost:3, cat:'Apoyo', forces:['Conservación'], text:'Curación fija menor.'},
+      {id:'heal5', name:'Curar 5 Resistencia', cost:5, cat:'Apoyo', forces:['Conservación'], text:'Curación fija estándar.'},
+      {id:'heal1d6', name:'Curar 1d6 Resistencia', cost:5, cat:'Apoyo', forces:['Conservación'], text:'Curación variable menor.'},
+      {id:'heal2d6', name:'Curar 2d6 Resistencia', cost:7, cat:'Apoyo', forces:['Conservación'], text:'Curación variable media.'},
+      {id:'heal3d6', name:'Curar 3d6 Resistencia', cost:10, cat:'Apoyo', forces:['Conservación'], text:'Curación fuerte. Puede ser efecto mayor según combinación.', major:true},
+      {id:'removeStateRoll', name:'Eliminar estado con tirada', cost:5, cat:'Apoyo', forces:['Conservación','Orden','Creación'], text:'Intenta eliminar un estado alterado.'},
+      {id:'removeStateAuto', name:'Eliminar estado automático', cost:15, cat:'Apoyo', forces:['Conservación'], text:'Elimina automáticamente un estado. Efecto mayor.', major:true, minLevel:3},
+      {id:'pen1', name:'−1 a una tirada', cost:3, cat:'Penalización', forces:['Orden','Caos','Transformación','Creación'], text:'Penalizador leve a una tirada concreta.'},
+      {id:'pen2', name:'−2 a una tirada', cost:5, cat:'Penalización', forces:['Orden','Caos'], text:'Penalizador moderado.'},
+      {id:'defpen2', name:'−2 a Defensa', cost:4, cat:'Penalización', forces:['Destrucción','Orden','Caos'], text:'Reduce la Defensa del objetivo brevemente.'},
+      {id:'stateMinor', name:'Estado menor', cost:4, cat:'Estado', forces:['Orden','Caos','Transformación','Creación'], text:'Ej: sin Reacción, movimiento reducido, ensordecido o penalizador leve.'},
+      {id:'stateMed', name:'Estado medio', cost:6, cat:'Estado', forces:['Orden','Caos','Transformación'], text:'Ej: Inmovilizado, Envenenado, Quemado o Cegado breve. Requiere Salvación.', major:false},
+      {id:'stateMajor', name:'Estado mayor', cost:10, cat:'Estado', forces:['Orden','Caos'], text:'Ej: Aturdido, Encantado fuerte, Dormido o pérdida de acción. Requiere Salvación.', major:true, minLevel:2},
+      {id:'save12', name:'Salvación ND 12', cost:3, cat:'Salvación', forces:['Destrucción','Conservación','Transformación','Creación','Orden','Caos'], text:'ND estándar para resistir el efecto.'},
+      {id:'save15', name:'Salvación ND 15', cost:6, cat:'Salvación', forces:['Destrucción','Conservación','Transformación','Creación','Orden','Caos'], text:'ND difícil para resistir el efecto.'},
+      {id:'summon14', name:'Convocar criatura ND 1/4', cost:6, cat:'Convocatoria', forces:['Creación','Caos','Transformación'], text:'Invoca una criatura débil por duración limitada.'},
+      {id:'summon1', name:'Convocar criatura ND 1', cost:10, cat:'Convocatoria', forces:['Creación'], text:'Invoca una criatura de ND 1.', major:true},
+      {id:'summon2', name:'Convocar criatura ND 2', cost:13, cat:'Convocatoria', forces:['Creación'], text:'Invoca una criatura de ND 2. Normalmente Nivel 3.', major:true, minLevel:3},
+      {id:'illusionVisual', name:'Ilusión visual', cost:3, cat:'Ilusión', forces:['Creación','Caos'], text:'Ilusión de un sentido.'},
+      {id:'illusionFull', name:'Ilusión completa', cost:7, cat:'Ilusión', forces:['Creación','Caos'], text:'Ilusión multisensorial. Requiere detección o Salvación clara.', major:false},
+      {id:'quick', name:'Convertir en Acción Rápida', cost:5, cat:'Acción', forces:['Destrucción','Conservación','Transformación','Creación','Orden','Caos'], text:'Permite usar la técnica como Acción Rápida. Coste base orientativo.'},
+      {id:'reaction', name:'Usar como Reacción', cost:5, cat:'Acción', forces:['Destrucción','Conservación','Transformación','Creación','Orden','Caos'], text:'Permite usar la técnica como Reacción. Debe tener disparador claro.'}
+    ];
+
+    const drawbacks = [
+      {id:'noMove', name:'No puede moverse hasta el inicio de su próximo turno', val:2, cat:'Agotamiento', text:'Desventaja post-uso menor.'},
+      {id:'noAttack', name:'No puede atacar hasta el inicio de su próximo turno', val:3, cat:'Agotamiento', text:'Desventaja post-uso moderada.'},
+      {id:'noMoveAttack', name:'No puede moverse ni atacar hasta el inicio de su próximo turno', val:4, cat:'Agotamiento', text:'Desventaja fuerte. No usar para abaratar remates sin riesgo real.'},
+      {id:'loseReact', name:'Pierde su Reacción hasta el inicio de su próximo turno', val:2, cat:'Agotamiento', text:'Limitación táctica breve.'},
+      {id:'fatigue1', name:'Gana 1 nivel de Fatiga', val:3, cat:'Fatiga', text:'No permitido en Nivel 0. Máximo 1 en Nivel 1.'},
+      {id:'fatigue2', name:'Gana 2 niveles de Fatiga', val:6, cat:'Fatiga', text:'Nivel 2 o superior.'},
+      {id:'chargeFast', name:'Requiere Acción Rápida el turno anterior', val:3, cat:'Carga', text:'La Resistencia se paga al iniciar la carga.'},
+      {id:'chargeMain', name:'Requiere Acción Principal el turno anterior', val:5, cat:'Carga', text:'La Resistencia se paga al iniciar la carga; puede interrumpirse.'},
+      {id:'charge2', name:'Requiere 2 turnos completos de preparación', val:8, cat:'Carga', text:'Preparación larga y vulnerable.'},
+      {id:'self1d6', name:'Sufre 1d6 de daño propio', val:3, cat:'Daño propio', text:'El daño no puede reducirse por la misma técnica.'},
+      {id:'self2d6', name:'Sufre 2d6 de daño propio', val:5, cat:'Daño propio', text:'Coste corporal fuerte.'},
+      {id:'touchOnly', name:'Solo funciona al toque o cuerpo a cuerpo', val:4, cat:'Alcance', text:'Solo si reduce de verdad la utilidad del efecto.'},
+      {id:'halfRange', name:'Alcance reducido a la mitad', val:2, cat:'Alcance', text:'Limitación de alcance.'},
+      {id:'predictSave', name:'Enemigos tienen Ventaja en Salvación contra esta técnica', val:4, cat:'Predecible', text:'La técnica es evidente, lenta o ritualizada.'},
+      {id:'predictDef', name:'Enemigos ganan +2 Defensa contra esta técnica', val:3, cat:'Predecible', text:'Ataque fácil de leer.'},
+      {id:'unstableFail1', name:'Con 1 en 1d6, falla y consume Resistencia', val:3, cat:'Inestable', text:'Propio de Caos.'},
+      {id:'unstableAlly', name:'Con 1 en 1d6, afecta a un aliado aleatorio', val:4, cat:'Inestable', text:'Riesgo alto; revisar con cuidado.'},
+      {id:'component', name:'Requiere símbolo, catalizador o herramienta concreta', val:2, cat:'Requisito', text:'Debe poder perderse o impedirse.'},
+      {id:'hands', name:'Requiere ambas manos libres', val:2, cat:'Requisito', text:'Limitación de uso real en combate.'},
+      {id:'speak', name:'Debe pronunciar una invocación audible', val:2, cat:'Requisito', text:'No funciona si está silenciado.'}
+    ];
+
+    const state = {
+      level:0,
+      selectedForces:[],
+      selectedEffects:[],
+      selectedDrawbacks:[],
+      autoEffectText:true
+    };
+
+    const $ = id => document.getElementById(id);
+    const fields = ['techName','treeName','actionType','range','target','whenText','effectText','saveText','durationText','descriptionText','extraNotes'];
+    let suppressEffectTextInput = false;
+
+    function init(){
+      renderLevels(); renderForces(); setupTabs(); setupFilters(); renderCatalogs(); bindFields(); loadSaved(); update();
+      $('copyBtn').addEventListener('click', copyText);
+      $('downloadBtn').addEventListener('click', downloadText);
+      $('saveBtn').addEventListener('click', saveLocal);
+      $('resetBtn').addEventListener('click', resetAll);
+      $('clearDrawbacks').addEventListener('click', ()=>{state.selectedDrawbacks=[]; update(); renderSelected();});
+      ['effectSearch','effectCategory','effectForce','drawbackSearch','drawbackCategory'].forEach(id=>$(id).addEventListener('input', renderCatalogs));
+    }
+
+    function renderLevels(){
+      const root = $('levelCards'); root.innerHTML='';
+      Object.entries(levels).forEach(([lvl,data])=>{
+        const div=document.createElement('div'); div.className='level-card'+(state.level==lvl?' selected':'');
+        div.innerHTML=`<strong>${data.name}</strong><span>${data.res} Res. · ${data.pc} PC</span><span>${data.note}</span>`;
+        div.addEventListener('click',()=>{state.level=Number(lvl); renderLevels(); update();});
+        root.appendChild(div);
+      });
+    }
+
+    function renderForces(){
+      const root=$('forceWrap'); root.innerHTML='';
+      forces.forEach(f=>{
+        const div=document.createElement('label'); div.className='force-card'+(state.selectedForces.includes(f.name)?' selected':'');
+        div.innerHTML=`<input type="checkbox"><strong>${f.name}</strong><span>${f.text}</span>`;
+        div.addEventListener('click', e=>{
+          e.preventDefault();
+          const i=state.selectedForces.indexOf(f.name);
+          if(i>=0) state.selectedForces.splice(i,1); else state.selectedForces.push(f.name);
+          renderForces(); update(); renderCatalogs();
+        });
+        root.appendChild(div);
+      });
+    }
+
+    function setupTabs(){
+      document.querySelectorAll('.tab').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+          document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+          btn.classList.add('active'); $(btn.dataset.tab).classList.add('active');
+          renderSelected();
+        });
+      });
+    }
+
+    function setupFilters(){
+      const cats=[...new Set(effects.map(e=>e.cat))].sort();
+      cats.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;$('effectCategory').appendChild(o);});
+      forces.forEach(f=>{const o=document.createElement('option');o.value=f.name;o.textContent=f.name;$('effectForce').appendChild(o);});
+      const dcats=[...new Set(drawbacks.map(d=>d.cat))].sort();
+      dcats.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;$('drawbackCategory').appendChild(o);});
+    }
+
+    function renderCatalogs(){
+      const search=$('effectSearch').value.toLowerCase();
+      const cat=$('effectCategory').value;
+      const force=$('effectForce').value;
+      $('effectList').innerHTML='';
+      effects.filter(e=>{
+        const matchSearch=(e.name+' '+e.text+' '+e.cat+' '+e.forces.join(' ')).toLowerCase().includes(search);
+        const matchCat=cat==='all'||e.cat===cat;
+        const matchForce=force==='all'||e.forces.includes(force);
+        return matchSearch&&matchCat&&matchForce;
+      }).forEach(e=> $('effectList').appendChild(effectCard(e,false)) );
+
+      const dsearch=$('drawbackSearch').value.toLowerCase();
+      const dcat=$('drawbackCategory').value;
+      $('drawbackList').innerHTML='';
+      drawbacks.filter(d=>{
+        const ms=(d.name+' '+d.text+' '+d.cat).toLowerCase().includes(dsearch);
+        const mc=dcat==='all'||d.cat===dcat;
+        return ms&&mc;
+      }).forEach(d=> $('drawbackList').appendChild(effectCard(d,true)) );
+    }
+
+    function effectCard(item,isDraw){
+      const div=document.createElement('div'); div.className='effect-card';
+      const compatible = isDraw || state.selectedForces.length===0 || item.forces?.some(f=>state.selectedForces.includes(f));
+      const minWarn = !isDraw && item.minLevel!==undefined && state.level < item.minLevel;
+      div.innerHTML=`
+        <div>
+          <div class="effect-title">${item.name}</div>
+          <div class="effect-meta">${item.text}</div>
+          <div class="chips">
+            <span class="chip">${item.cat}</span>
+            ${isDraw?'<span class="chip warn">Reduce PC</span>':(item.forces||[]).map(f=>`<span class="chip force">${f}</span>`).join('')}
+            ${item.major?'<span class="chip major">Efecto mayor</span>':''}
+            ${!compatible?'<span class="chip warn">Fuerza no afín</span>':''}
+            ${minWarn?`<span class="chip warn">Nivel mínimo ${item.minLevel}</span>`:''}
+          </div>
+        </div>
+        <div style="display:grid;gap:8px;justify-items:end">
+          <span class="cost-pill">${isDraw?'-':''}${isDraw?item.val:item.cost} PC</span>
+          <button class="add-btn">Añadir</button>
+        </div>`;
+      div.querySelector('button').addEventListener('click',()=>{
+        if(isDraw) state.selectedDrawbacks.push({...item, uid:crypto.randomUUID(), note:''});
+        else {
+          const newItem={...item, uid:crypto.randomUUID(), note:''};
+          state.selectedEffects.push(newItem);
+          applyRangeTargetDefaults(newItem);
+          syncEffectText();
+        }
+        update(); renderSelected();
+      });
+      return div;
+    }
+
+    function renderSelected(){
+      const eroot=$('selectedEffects'); if(!eroot) return;
+      eroot.innerHTML='';
+      if(state.selectedEffects.length===0) eroot.innerHTML='<p class="help">No hay efectos seleccionados.</p>';
+      state.selectedEffects.forEach(item=> eroot.appendChild(selectedCard(item,false)) );
+      const droot=$('selectedDrawbacks'); droot.innerHTML='';
+      if(state.selectedDrawbacks.length===0) droot.innerHTML='<p class="help">No hay desventajas seleccionadas.</p>';
+      state.selectedDrawbacks.forEach(item=> droot.appendChild(selectedCard(item,true)) );
+    }
+
+    function selectedCard(item,isDraw){
+      const div=document.createElement('div'); div.className='selected-item';
+      div.innerHTML=`
+        <div class="selected-top"><div><strong>${item.name}</strong><div class="help">${isDraw?'-'+item.val:item.cost} PC · ${item.cat}</div></div><button class="remove">Eliminar</button></div>
+        <div class="inline-controls">
+          <div><label>PC</label><input type="number" value="${isDraw?item.val:item.cost}" min="0"></div>
+          <div><label>Nota o ajuste</label><textarea class="note-input" placeholder="Ej: solo contra un objetivo, duración 1 ronda...">${item.note||''}</textarea></div>
+        </div>`;
+      div.querySelector('.remove').addEventListener('click',()=>{
+        const arr=isDraw?state.selectedDrawbacks:state.selectedEffects;
+        const idx=arr.findIndex(x=>x.uid===item.uid); if(idx>=0) arr.splice(idx,1);
+        syncEffectText(); update(); renderSelected();
+      });
+      div.querySelector('input').addEventListener('input',e=>{
+        const val=Math.max(0,Number(e.target.value)||0);
+        if(isDraw) item.val=val; else item.cost=val;
+        update();
+      });
+      div.querySelector('textarea').addEventListener('input',e=>{item.note=e.target.value; syncEffectText(); update();});
+      return div;
+    }
+
+    function bindFields(){
+      fields.forEach(id=>$(id).addEventListener('input',()=>{
+        if(id==='effectText' && !suppressEffectTextInput){
+          state.autoEffectText=false;
+          if($('autoEffectText')) $('autoEffectText').checked=false;
+        }
+        update();
+      }));
+      $('rangePreset').addEventListener('change',()=>{
+        if($('rangePreset').value !== 'Personalizado') $('range').value = $('rangePreset').value;
+        syncEffectText(); update();
+      });
+      $('targetPreset').addEventListener('change',()=>{
+        if($('targetPreset').value !== 'Personalizado') $('target').value = $('targetPreset').value;
+        syncEffectText(); update();
+      });
+      $('range').addEventListener('input',()=>{ $('rangePreset').value='Personalizado'; syncEffectText(); update(); });
+      $('target').addEventListener('input',()=>{ $('targetPreset').value='Personalizado'; syncEffectText(); update(); });
+      $('autoEffectText').addEventListener('change',()=>{
+        state.autoEffectText=$('autoEffectText').checked;
+        if(state.autoEffectText) syncEffectText();
+        update();
+      });
+    }
+
+    function inferRangeTargetFromEffect(item){
+      const id=item.id||'';
+      const name=(item.name||'').toLowerCase();
+      if(id==='range10') return {range:'10 metros', target:'1 objetivo'};
+      if(id==='tele5') return {range:'Personal', target:'Tú'};
+      if(id==='area1') return {target:'Radio de 1 metro'};
+      if(id==='area5') return {target:'Radio de 5 metros'};
+      if(id==='area10') return {target:'Radio de 10 metros'};
+      if(id.startsWith('proj')) return {range:'10 metros', target:'1 objetivo'};
+      if(id.startsWith('summon')) return {range:'10 metros', target:'1 criatura convocada'};
+      if(name.includes('curar') || name.includes('eliminar estado')) return {range:'Toque', target:'1 aliado'};
+      if(name.includes('vuelo') || name.includes('levitar') || name.includes('incorpóreo') || name.includes('movimiento')) return {range:'Personal', target:'Tú'};
+      if(name.includes('defensa') || name.includes('resistencia a') || name.includes('inmunidad')) return {range:'Personal', target:'Tú'};
+      if(name.includes('estado') || name.includes('penalizador') || name.includes('salvación')) return {range:'Toque', target:'1 objetivo'};
+      return {};
+    }
+
+    function applyRangeTargetDefaults(item){
+      const inf=inferRangeTargetFromEffect(item);
+      if(inf.range && ($('range').value.trim()==='' || $('range').value.trim()==='Toque')){
+        $('range').value=inf.range;
+        if([...$('rangePreset').options].some(o=>o.value===inf.range)) $('rangePreset').value=inf.range;
+        else $('rangePreset').value='Personalizado';
+      }
+      if(inf.target && ($('target').value.trim()==='' || $('target').value.trim()==='1 objetivo')){
+        $('target').value=inf.target;
+        if([...$('targetPreset').options].some(o=>o.value===inf.target)) $('targetPreset').value=inf.target;
+        else $('targetPreset').value='Personalizado';
+      }
+    }
+
+    function composeEffectText(){
+      const range=$('range').value.trim()||'Toque';
+      const target=$('target').value.trim()||'1 objetivo';
+      const lines=[];
+      lines.push(`Alcance: ${range}. Objetivo o área: ${target}.`);
+      if(state.selectedEffects.length){
+        lines.push('');
+        lines.push('Efectos seleccionados:');
+        state.selectedEffects.forEach(e=>{
+          const note=(e.note||'').trim();
+          lines.push(`- ${e.name}: ${note || e.text}`);
+        });
+      } else {
+        lines.push('');
+        lines.push('Sin efectos seleccionados todavía.');
+      }
+      return lines.join('\n');
+    }
+
+    function syncEffectText(){
+      if(!state.autoEffectText) return;
+      suppressEffectTextInput=true;
+      $('effectText').value=composeEffectText();
+      suppressEffectTextInput=false;
+    }
+
+    function sums(){
+      const budget=levels[state.level].pc;
+      const maxDraw=levels[state.level].maxDraw;
+      const eff=state.selectedEffects.reduce((s,e)=>s+(Number(e.cost)||0),0);
+      const rawDraw=state.selectedDrawbacks.reduce((s,d)=>s+(Number(d.val)||0),0);
+      const draw=Math.min(rawDraw,maxDraw,Math.floor(budget/2));
+      const final=eff-draw;
+      const major=state.selectedEffects.filter(e=>e.major).length;
+      return {budget,maxDraw,eff,rawDraw,draw,final,major};
+    }
+
+    function update(){
+      syncEffectText();
+      const s=sums();
+      $('sumLevel').textContent=state.level;
+      $('sumRes').textContent=levels[state.level].res;
+      $('sumBudget').textContent=s.budget;
+      $('sumEffects').textContent=s.eff;
+      $('sumDrawbacks').textContent=s.draw + (s.rawDraw>s.draw?` (${s.rawDraw} bruto)`:``);
+      $('sumFinal').textContent=s.final;
+      const pct=Math.min(100, Math.max(0, (s.final/s.budget)*100)); $('pcBar').style.width=pct+'%';
+      const status=$('statusBox'); status.className='status';
+      let msgs=[];
+      if(s.final<=s.budget) {status.classList.add('ok'); msgs.push('La técnica está dentro del presupuesto.');}
+      else {status.classList.add('bad'); msgs.push(`Excede el presupuesto por ${s.final-s.budget} PC.`);}
+      if(s.rawDraw>s.draw){status.className='status warn'; msgs.push(`Las desventajas superan el máximo aplicable. Solo se descuentan ${s.draw} PC.`);}
+      const levelWarnings=[];
+      state.selectedEffects.forEach(e=>{ if(e.minLevel!==undefined && state.level<e.minLevel) levelWarnings.push(`${e.name} exige Nivel ${e.minLevel}+`); });
+      if(levelWarnings.length){status.className='status bad'; msgs.push(levelWarnings.join('; ')+'.');}
+      if(state.level<3 && s.major>1){status.className='status warn'; msgs.push('Hay más de un efecto mayor antes de Nivel 3. Revisa compatibilidad.');}
+      if(state.selectedDrawbacks.some(d=>d.id==='fatigue1'||d.id==='fatigue2') && state.level===0){status.className='status bad'; msgs.push('Nivel 0 no puede usar Fatiga como desventaja.');}
+      status.textContent=msgs.join(' ');
+      $('previewText').textContent=buildText();
+      localStorage.setItem('papaTechDraft', JSON.stringify(serialize()));
+    }
+
+    function buildText(){
+      const name=$('techName').value.trim()||'Técnica sin nombre';
+      const tree=$('treeName').value.trim()||'Árbol sin definir';
+      const primary=state.selectedForces[0]||'Sin definir';
+      const secondary=state.selectedForces.slice(1).join(', ');
+      const s=sums();
+      const effectLines=state.selectedEffects.map(e=>`- ${e.name} (${e.cost} PC)${e.note?`: ${e.note}`:''}`).join('\n')||'- Ninguno';
+      const drawbackLines=state.selectedDrawbacks.map(d=>`- ${d.name} (-${d.val} PC)${d.note?`: ${d.note}`:''}`).join('\n')||'- Ninguna';
+      return `${name}\n${tree}\n\nNivel: ${state.level}\nCoste de Resistencia: ${levels[state.level].res}\nFuerza principal: ${primary}${secondary?`\nFuerza secundaria: ${secondary}`:''}\nAcción requerida: ${$('actionType').value}\nAlcance: ${$('range').value.trim()||'No indicado'}\nObjetivo o área: ${$('target').value.trim()||'No indicado'}\n\nCUÁNDO:\n${$('whenText').value.trim()||'No indicado.'}\n\nQUÉ HACE:\n${$('effectText').value.trim()||'No indicado.'}\n\nSALVACIÓN:\n${$('saveText').value.trim()||'No aplica o no indicada.'}\n\nDURACIÓN Y CIERRE:\n${$('durationText').value.trim()||'Instantánea o no indicada.'}\n\nDESCRIPCIÓN:\n${$('descriptionText').value.trim()||'Sin descripción.'}\n\nCÁLCULO DE PC\nPC disponibles: ${s.budget}\nEfectos: ${s.eff} PC\nDesventajas aplicadas: -${s.draw} PC${s.rawDraw>s.draw?` (${s.rawDraw} PC brutos; máximo aplicable ${s.draw})`:''}\nCoste final: ${s.final} PC\n\nEfectos seleccionados:\n${effectLines}\n\nDesventajas seleccionadas:\n${drawbackLines}\n\nNotas del diseñador:\n${$('extraNotes').value.trim()||'Sin notas.'}`;
+    }
+
+    function serialize(){ const data={state:{level:state.level,selectedForces:state.selectedForces,selectedEffects:state.selectedEffects,selectedDrawbacks:state.selectedDrawbacks}, fields:{}}; fields.forEach(id=>data.fields[id]=$(id).value); return data; }
+    function inferPresetValues(){
+      const rv=$('range').value || 'Toque';
+      const tv=$('target').value || '1 objetivo';
+      if([...$('rangePreset').options].some(o=>o.value===rv)) $('rangePreset').value=rv; else $('rangePreset').value='Personalizado';
+      if([...$('targetPreset').options].some(o=>o.value===tv)) $('targetPreset').value=tv; else $('targetPreset').value='Personalizado';
+    }
+    function loadSaved(){
+      const raw=localStorage.getItem('papaTechDraft'); if(!raw) return;
+      try{ const data=JSON.parse(raw); Object.assign(state,data.state||{}); fields.forEach(id=>{ if(data.fields&&data.fields[id]!==undefined) $(id).value=data.fields[id]; }); if($('autoEffectText')) $('autoEffectText').checked=state.autoEffectText!==false; inferPresetValues(); renderLevels(); renderForces(); renderCatalogs(); renderSelected(); }catch(e){}
+    }
+    function saveLocal(){ localStorage.setItem('papaTechDraft', JSON.stringify(serialize())); $('copyMsg').textContent='Guardado en este navegador.'; setTimeout(()=>$('copyMsg').textContent='',2200); }
+    function resetAll(){
+      if(!confirm('¿Limpiar la técnica actual?')) return;
+      fields.forEach(id=>$(id).value=''); $('range').value='Toque'; $('target').value='1 objetivo'; $('rangePreset').value='Toque'; $('targetPreset').value='1 objetivo'; state.level=0; state.selectedForces=[]; state.selectedEffects=[]; state.selectedDrawbacks=[]; state.autoEffectText=true; $('autoEffectText').checked=true;
+      localStorage.removeItem('papaTechDraft'); renderLevels(); renderForces(); renderCatalogs(); renderSelected(); update();
+    }
+    async function copyText(){
+      try{ await navigator.clipboard.writeText(buildText()); $('copyMsg').textContent='Texto copiado al portapapeles.'; }
+      catch(e){ $('copyMsg').textContent='No se pudo copiar automáticamente. Selecciona el texto de la vista previa.'; }
+      setTimeout(()=>$('copyMsg').textContent='',2600);
+    }
+    function downloadText(){
+      const blob=new Blob([buildText()],{type:'text/plain;charset=utf-8'});
+      const a=document.createElement('a');
+      const name=($('techName').value.trim()||'tecnica_papa').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
+      a.href=URL.createObjectURL(blob); a.download=name+'.txt'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(a.href);
+    }
+
+    init();
+  </script>
+</body>
+</html>
